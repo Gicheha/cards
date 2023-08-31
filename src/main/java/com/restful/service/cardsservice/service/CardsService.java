@@ -1,6 +1,7 @@
 package com.restful.service.cardsservice.service;
 
 import com.restful.service.cardsservice.Repository.CardsRepository;
+import com.restful.service.cardsservice.Repository.UserRepository;
 import com.restful.service.cardsservice.model.Card;
 import com.restful.service.cardsservice.model.CardsDto;
 import com.restful.service.cardsservice.model.Users;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,9 +24,16 @@ public class CardsService {
 
     private CardsRepository cardsRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
     public void setCardsRepository(CardsRepository cardsRepository) {
         this.cardsRepository = cardsRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -82,8 +92,8 @@ public class CardsService {
     }
 
     @Transactional
-    public List<Card> getCardsByDate(Timestamp date, Pageable pageable){
-        var cards = cardsRepository.findAllByCreated(date, pageable);
+    public List<Card> getCardsByDate(String date, Pageable pageable){
+        var cards = cardsRepository.findByDate(date, pageable);
 
         if(getUser().getRole().equals("admin")){
             return cards;
@@ -118,7 +128,7 @@ public class CardsService {
 
     private Users getUser(){
         var user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return user;
+        return userRepository.findByEmail(user.getEmail()).get();
     }
 
     @Transactional
@@ -130,8 +140,8 @@ public class CardsService {
 
         var card = new Card();
         card.setName(cardsDto.getName());
-        card.setColour(card.getColour());
-        card.setDescription(card.getDescription());
+        card.setColour(cardsDto.getColour());
+        card.setDescription(cardsDto.getDescription());
         card.setState(cardState);
         card.setUser(user);
 

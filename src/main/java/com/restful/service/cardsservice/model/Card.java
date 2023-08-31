@@ -1,13 +1,9 @@
 package com.restful.service.cardsservice.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
 
@@ -17,36 +13,38 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cards")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id",
-        scope = Card.class)
 public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false,insertable = false)
     @ApiModelProperty(position = 1)
     private Long id;
 
+    @Getter
+    @Setter
     @ApiModelProperty(position = 2)
     private String name;
 
+    @Getter
+    @Setter
     @ApiModelProperty(position = 3)
     private String description;
 
     @ApiModelProperty(position = 4)
     private String colour;
 
-    @Enumerated(EnumType.STRING)
     @ApiModelProperty(position = 5)
     private String state;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     @ApiModelProperty(position = 6)
     private Users user;
 
+    @CreatedDate
+    @Column(insertable = false)
     @ApiModelProperty(position = 7)
-    private Timestamp created;
+    private Timestamp created_at;
 
 }

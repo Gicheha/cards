@@ -4,6 +4,7 @@ import com.restful.service.cardsservice.model.Card;
 import com.restful.service.cardsservice.model.CardsDto;
 import com.restful.service.cardsservice.service.CardsService;
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +32,7 @@ public class CardsController {
         this.cardsService = cardsService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     @ApiOperation(value = "View a list of all cards", response = Card.class, responseContainer = "List")
     public ResponseEntity<?> getAllCards(
             @RequestParam(defaultValue = "0") int page,
@@ -44,7 +49,7 @@ public class CardsController {
 
         }catch (Exception e){
 
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
@@ -63,11 +68,11 @@ public class CardsController {
             }
 
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/colour")
     @ApiOperation(value = "Find Cards by colour", response = Card.class, responseContainer = "List")
     public ResponseEntity<?> getCardByColour(@RequestParam String colour,@RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "3") int size){
@@ -84,11 +89,11 @@ public class CardsController {
              return noCardFoundResponse(colour, "colour");
             }
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/status")
     @ApiOperation(value = "Find Cards by Status", response = Card.class, responseContainer = "List")
     public ResponseEntity<?> getCardByStatus(@RequestParam String status,@RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "3") int size){
@@ -106,13 +111,13 @@ public class CardsController {
                 return noCardFoundResponse(status, "status");
             }
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/dates")
     @ApiOperation(value = "Find Cards by Date", response = Card.class, responseContainer = "List")
-    public ResponseEntity<?> getCardByDate(@RequestParam Timestamp date, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getCardByDate(@RequestParam String date, @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "3") int size){
 
         Pageable paging  = PageRequest.of(page,size);
@@ -125,14 +130,14 @@ public class CardsController {
                         HttpStatus.OK
                 );
             }else{
-                return noCardFoundResponse(date.toString(), "status");
+                return noCardFoundResponse(date, "date");
             }
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/names")
     @ApiOperation(value = "Find Cards by Name", response = Card.class, responseContainer = "List")
     public ResponseEntity<?> getCardByName(@RequestParam String name,@RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "3") int size){
@@ -150,13 +155,13 @@ public class CardsController {
             }
 
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/save")
     @ApiOperation(value = "Save a new Card", response = Card.class)
-    public ResponseEntity<?> createCard(@RequestBody CardsDto cardsDto){
+    public ResponseEntity<?> createCard(@RequestBody @Valid CardsDto cardsDto){
         try {
             return new ResponseEntity<>(
                     cardsService.saveNewCards(cardsDto),
@@ -164,7 +169,7 @@ public class CardsController {
             );
 
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
@@ -182,7 +187,7 @@ public class CardsController {
                 return noCardFoundResponse(id);
             }
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
@@ -201,12 +206,12 @@ public class CardsController {
                 return noCardFoundResponse(id);
             }
         }catch (Exception e){
-            return errorResponse();
+            return errorResponse(e);
         }
     }
 
-    private ResponseEntity<String> errorResponse(){
-        return new ResponseEntity<>("Something went wrong :(", HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<String> errorResponse(Exception e){
+        return new ResponseEntity<>("Something went wrong :" + e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<String> noCardFoundResponse(Long id){
@@ -215,5 +220,11 @@ public class CardsController {
 
     private ResponseEntity<String> noCardFoundResponse(String someText, String operation){
         return new ResponseEntity<>("No Card found with " + operation + " : " + someText, HttpStatus.NOT_FOUND);
+    }
+
+    private Date getTimestamp(String date) throws ParseException {
+        final String OLD_FORMAT = "yyyy-MM-dd";
+        final DateFormat formatter = new SimpleDateFormat(OLD_FORMAT);
+        return formatter.parse(date);
     }
 }

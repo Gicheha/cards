@@ -2,7 +2,6 @@ package com.restful.service.cardsservice.entries;
 
 import com.restful.service.cardsservice.model.AuthRequest;
 import com.restful.service.cardsservice.model.AuthResponse;
-import com.restful.service.cardsservice.model.Card;
 import com.restful.service.cardsservice.model.Users;
 import com.restful.service.cardsservice.utilities.JwtTokenUtil;
 import io.swagger.annotations.ApiOperation;
