@@ -45,6 +45,6 @@ public class Card {
     @CreatedDate
     @Column(insertable = false)
     @ApiModelProperty(position = 7)
-    private Timestamp created_at;
+    private Timestamp created;
 
 }

@@ -11,7 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,8 +92,8 @@ public class CardsService {
     }
 
     @Transactional
-    public List<Card> getCardsByDate(String date, Pageable pageable){
-        var cards = cardsRepository.findByDate(date, pageable);
+    public List<Card> getCardsByDate(String date, Pageable pageable) throws ParseException {
+        var cards = cardsRepository.findByCreatedAfter(convertStringToDate(date), pageable);
 
         if(getUser().getRole().equals("admin")){
             return cards;
@@ -143,6 +146,10 @@ public class CardsService {
         card.setUser(user);
 
         return card;
+    }
+
+    private Date convertStringToDate(String dateString) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
     }
 
 }
