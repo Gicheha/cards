@@ -37,27 +37,28 @@ public class CardsService {
     }
 
     @Transactional
-    public List<Card> getAllCards(Pageable pageable){
+    public List<Card> getAllCards(Pageable pageable) {
         List<Card> cardsList = new ArrayList<>();
         cardsRepository.findAll(pageable).forEach(cardsList::add);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return cardsList;
-        }{
+        }
+        {
             return cardsList.stream().filter(card -> card.getUser() == getUser()).collect(Collectors.toList());
         }
 
     }
 
     @Transactional
-    public Optional<Card> getCardById(Long id){
+    public Optional<Card> getCardById(Long id) {
         var card = cardsRepository.findById(id);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return card;
         }
 
-        if(card.isPresent() && card.get().getUser() == getUser()){
+        if (card.isPresent() && card.get().getUser() == getUser()) {
 
             return card;
         }
@@ -66,26 +67,26 @@ public class CardsService {
     }
 
     @Transactional
-    public List<Card> getCardsByColor(String colour, Pageable pageable){
+    public List<Card> getCardsByColor(String colour, Pageable pageable) {
 
-        var cards = cardsRepository.findAllByColour(colour,pageable);
+        var cards = cardsRepository.findAllByColour(colour, pageable);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return cards;
-        }else{
+        } else {
             return cards.stream().filter(card -> card.getUser() == getUser()).collect(Collectors.toList());
         }
 
     }
 
     @Transactional
-    public List<Card> getCardsByStatus(String status, Pageable pageable){
+    public List<Card> getCardsByStatus(String status, Pageable pageable) {
 
         var cards = cardsRepository.findAllByState(status, pageable);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return cardsRepository.findAllByState(status, pageable);
-        }else {
+        } else {
             return cards.stream().filter(card -> card.getUser() == getUser()).collect(Collectors.toList());
         }
 
@@ -95,26 +96,26 @@ public class CardsService {
     public List<Card> getCardsByDate(String date, Pageable pageable) throws ParseException {
         var cards = cardsRepository.findByCreatedAfter(convertStringToDate(date), pageable);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return cards;
-        }else {
+        } else {
             return cards.stream().filter(card -> card.getUser() == getUser()).collect(Collectors.toList());
         }
     }
 
     @Transactional
-    public List<Card> getCardsByName(String name, Pageable pageable){
+    public List<Card> getCardsByName(String name, Pageable pageable) {
         var cards = cardsRepository.findAllByName(name, pageable);
 
-        if(getUser().getRole().equals("admin")){
+        if (getUser().getRole().equals("admin")) {
             return cards;
-        }else {
+        } else {
             return cards.stream().filter(card -> card.getUser() == getUser()).collect(Collectors.toList());
         }
     }
 
     @Transactional
-    public Card saveNewCards(CardsDto cardsDto){
+    public Card saveNewCards(CardsDto cardsDto) {
         var card = new Card();
         card.setName(cardsDto.getName());
         card.setColour(cardsDto.getColour());
@@ -125,20 +126,20 @@ public class CardsService {
     }
 
     @Transactional
-    public Card updateCard(Card oldCard, CardsDto cardsDto){
+    public Card updateCard(Card oldCard, CardsDto cardsDto) {
 
-        if(oldCard.getUser() == getUser()){
+        if (oldCard.getUser() == getUser()) {
             oldCard.setName(cardsDto.getName());
             oldCard.setDescription(cardsDto.getDescription());
             oldCard.setColour(cardsDto.getColour());
             return cardsRepository.save(oldCard);
-        }else{
+        } else {
             return null;
         }
     }
 
     @Transactional
-    public void deleteCard(Card card){
+    public void deleteCard(Card card) {
         cardsRepository.delete(card);
     }
 
@@ -146,7 +147,7 @@ public class CardsService {
         return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
     }
 
-    public Users getUser(){
+    public Users getUser() {
         var user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.findByEmail(user.getEmail()).get();
     }

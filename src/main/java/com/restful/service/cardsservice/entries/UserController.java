@@ -38,13 +38,13 @@ public class UserController {
 
     @PostMapping("/login")
     @ApiOperation(value = "Authenticate User", response = AuthResponse.class)
-    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest){
+    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest authRequest) {
 
-        try{
+        try {
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            authRequest.getEmail(),authRequest.getPassword()
+                            authRequest.getEmail(), authRequest.getPassword()
                     )
             );
 
@@ -53,7 +53,7 @@ public class UserController {
             AuthResponse response = new AuthResponse(user.getEmail(), accessToken);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }

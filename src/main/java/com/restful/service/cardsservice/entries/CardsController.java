@@ -2,7 +2,6 @@ package com.restful.service.cardsservice.entries;
 
 import com.restful.service.cardsservice.model.Card;
 import com.restful.service.cardsservice.model.CardsDto;
-import com.restful.service.cardsservice.model.Users;
 import com.restful.service.cardsservice.service.CardsService;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
@@ -11,14 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,8 +34,8 @@ public class CardsController {
     public ResponseEntity<?> getAllCards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size
-    ){
-        Pageable paging  = PageRequest.of(page,size);
+    ) {
+        Pageable paging = PageRequest.of(page, size);
 
         try {
 
@@ -51,7 +44,7 @@ public class CardsController {
                     HttpStatus.OK
             );
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             return errorResponse(e);
         }
@@ -59,62 +52,62 @@ public class CardsController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "find a card by its id", response = Card.class)
-    public ResponseEntity<?> getCard(@PathVariable Long id){
+    public ResponseEntity<?> getCard(@PathVariable Long id) {
         try {
             Optional<Card> card = cardsService.getCardById(id);
-            if(card.isPresent()){
+            if (card.isPresent()) {
                 return new ResponseEntity<>(
                         card.get(),
                         HttpStatus.OK
                 );
-            }else {
+            } else {
                 return noCardFoundResponse(id);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @GetMapping("/colour")
     @ApiOperation(value = "Find Cards by colour", response = Card.class, responseContainer = "List")
-    public ResponseEntity<?> getCardByColour(@RequestParam String colour,@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "3") int size){
+    public ResponseEntity<?> getCardByColour(@RequestParam String colour, @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "3") int size) {
 
-        Pageable paging  = PageRequest.of(page,size);
-        try{
-            List<Card> cards = cardsService.getCardsByColor(colour,paging);
-            if(cards.size() > 0){
+        Pageable paging = PageRequest.of(page, size);
+        try {
+            List<Card> cards = cardsService.getCardsByColor(colour, paging);
+            if (cards.size() > 0) {
                 return new ResponseEntity<>(
                         cards,
                         HttpStatus.OK
                 );
-            }else{
-             return noCardFoundResponse(colour, "colour");
+            } else {
+                return noCardFoundResponse(colour, "colour");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @GetMapping("/status")
     @ApiOperation(value = "Find Cards by Status", response = Card.class, responseContainer = "List")
-    public ResponseEntity<?> getCardByStatus(@RequestParam String status,@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "3") int size){
+    public ResponseEntity<?> getCardByStatus(@RequestParam String status, @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "3") int size) {
 
-        Pageable paging  = PageRequest.of(page,size);
+        Pageable paging = PageRequest.of(page, size);
 
-        try{
-            List<Card> cards = cardsService.getCardsByStatus(status,paging);
-            if(cards.size() > 0){
+        try {
+            List<Card> cards = cardsService.getCardsByStatus(status, paging);
+            if (cards.size() > 0) {
                 return new ResponseEntity<>(
                         cards,
                         HttpStatus.OK
                 );
-            }else{
+            } else {
                 return noCardFoundResponse(status, "status");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
@@ -122,115 +115,115 @@ public class CardsController {
     @GetMapping("/dates")
     @ApiOperation(value = "Find Cards by Date", response = Card.class, responseContainer = "List")
     public ResponseEntity<?> getCardByDate(@RequestParam String date, @RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "3") int size){
+                                           @RequestParam(defaultValue = "3") int size) {
 
-        Pageable paging  = PageRequest.of(page,size);
+        Pageable paging = PageRequest.of(page, size);
 
-        try{
-            List<Card> cards = cardsService.getCardsByDate(date,paging);
-            if(cards.size() > 0){
+        try {
+            List<Card> cards = cardsService.getCardsByDate(date, paging);
+            if (cards.size() > 0) {
                 return new ResponseEntity<>(
                         cards,
                         HttpStatus.OK
                 );
-            }else{
+            } else {
                 return noCardFoundResponse(date, "date");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @GetMapping("/names")
     @ApiOperation(value = "Find Cards by Name", response = Card.class, responseContainer = "List")
-    public ResponseEntity<?> getCardByName(@RequestParam String name,@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "3") int size){
+    public ResponseEntity<?> getCardByName(@RequestParam String name, @RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "3") int size) {
 
-        Pageable paging  = PageRequest.of(page,size);
-        try{
-            List<Card> cards = cardsService.getCardsByName(name,paging);
-            if(cards.size() > 0){
+        Pageable paging = PageRequest.of(page, size);
+        try {
+            List<Card> cards = cardsService.getCardsByName(name, paging);
+            if (cards.size() > 0) {
                 return new ResponseEntity<>(
                         cards,
                         HttpStatus.OK
                 );
-            }else{
-                return noCardFoundResponse(name,"name");
+            } else {
+                return noCardFoundResponse(name, "name");
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @PostMapping("/save")
     @ApiOperation(value = "Save a new Card", response = Card.class)
-    public ResponseEntity<?> createCard(@RequestBody @Valid CardsDto cardsDto){
+    public ResponseEntity<?> createCard(@RequestBody @Valid CardsDto cardsDto) {
         try {
             return new ResponseEntity<>(
                     cardsService.saveNewCards(cardsDto),
                     HttpStatus.CREATED
             );
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "update card with sspecific id", response = Card.class)
-    public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody CardsDto cardsDto){
-        try{
+    public ResponseEntity<?> updateCard(@PathVariable Long id, @RequestBody CardsDto cardsDto) {
+        try {
             Optional<Card> card = cardsService.getCardById(id);
-            if(card.isPresent()){
-                var savedCard = cardsService.updateCard(card.get(),cardsDto);
-                if(isNull(savedCard)){
+            if (card.isPresent()) {
+                var savedCard = cardsService.updateCard(card.get(), cardsDto);
+                if (isNull(savedCard)) {
                     return new ResponseEntity<>(
-                            cardsService.updateCard(card.get(),cardsDto),
+                            cardsService.updateCard(card.get(), cardsDto),
                             HttpStatus.OK
                     );
-                }else{
-                 return new ResponseEntity<>(
-                         null,
-                         HttpStatus.FORBIDDEN
-                 );
+                } else {
+                    return new ResponseEntity<>(
+                            null,
+                            HttpStatus.FORBIDDEN
+                    );
                 }
-            }else{
+            } else {
                 return noCardFoundResponse(id);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete Card with id", response = String.class)
-    public ResponseEntity<?> deleteCard(@PathVariable Long id){
-        try{
+    public ResponseEntity<?> deleteCard(@PathVariable Long id) {
+        try {
             Optional<Card> card = cardsService.getCardById(id);
-            if(card.isPresent()){
+            if (card.isPresent()) {
                 cardsService.deleteCard(card.get());
                 return new ResponseEntity<>(
                         String.format("Card with id: %d was deleted", id),
                         HttpStatus.OK
                 );
-            }else{
+            } else {
                 return noCardFoundResponse(id);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return errorResponse(e);
         }
     }
 
-    private ResponseEntity<String> errorResponse(Exception e){
+    private ResponseEntity<String> errorResponse(Exception e) {
         return new ResponseEntity<>("Something went wrong :" + e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<String> noCardFoundResponse(Long id){
+    private ResponseEntity<String> noCardFoundResponse(Long id) {
         return new ResponseEntity<>("No Card found with id: " + id, HttpStatus.NOT_FOUND);
     }
 
-    private ResponseEntity<String> noCardFoundResponse(String someText, String operation){
+    private ResponseEntity<String> noCardFoundResponse(String someText, String operation) {
         return new ResponseEntity<>("No Card found with " + operation + " : " + someText, HttpStatus.NOT_FOUND);
     }
 

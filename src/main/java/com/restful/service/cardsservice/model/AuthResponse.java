@@ -13,7 +13,8 @@ public class AuthResponse {
     @Setter
     private String accessToken;
 
-    public AuthResponse() { }
+    public AuthResponse() {
+    }
 
     public AuthResponse(String email, String accessToken) {
         this.email = email;

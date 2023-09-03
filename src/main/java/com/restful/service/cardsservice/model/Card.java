@@ -17,7 +17,7 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false,insertable = false)
+    @Column(name = "id", nullable = false, insertable = false)
     @ApiModelProperty(position = 1)
     private Long id;
 
