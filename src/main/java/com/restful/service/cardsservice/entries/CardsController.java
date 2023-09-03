@@ -2,6 +2,7 @@ package com.restful.service.cardsservice.entries;
 
 import com.restful.service.cardsservice.model.Card;
 import com.restful.service.cardsservice.model.CardsDto;
+import com.restful.service.cardsservice.model.Users;
 import com.restful.service.cardsservice.service.CardsService;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -19,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 
 @RestController
@@ -179,10 +183,18 @@ public class CardsController {
         try{
             Optional<Card> card = cardsService.getCardById(id);
             if(card.isPresent()){
-                return new ResponseEntity<>(
-                        cardsService.updateCard(card.get(),cardsDto),
-                        HttpStatus.OK
-                );
+                var savedCard = cardsService.updateCard(card.get(),cardsDto);
+                if(isNull(savedCard)){
+                    return new ResponseEntity<>(
+                            cardsService.updateCard(card.get(),cardsDto),
+                            HttpStatus.OK
+                    );
+                }else{
+                 return new ResponseEntity<>(
+                         null,
+                         HttpStatus.FORBIDDEN
+                 );
+                }
             }else{
                 return noCardFoundResponse(id);
             }
@@ -222,9 +234,4 @@ public class CardsController {
         return new ResponseEntity<>("No Card found with " + operation + " : " + someText, HttpStatus.NOT_FOUND);
     }
 
-    private Date getTimestamp(String date) throws ParseException {
-        final String OLD_FORMAT = "yyyy-MM-dd";
-        final DateFormat formatter = new SimpleDateFormat(OLD_FORMAT);
-        return formatter.parse(date);
-    }
 }

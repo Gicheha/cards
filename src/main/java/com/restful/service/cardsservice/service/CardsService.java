@@ -115,20 +115,26 @@ public class CardsService {
 
     @Transactional
     public Card saveNewCards(CardsDto cardsDto){
-        return cardsRepository.save(convertDTOToCard(cardsDto,"To Do",getUser()));
+        var card = new Card();
+        card.setName(cardsDto.getName());
+        card.setColour(cardsDto.getColour());
+        card.setDescription(cardsDto.getDescription());
+        card.setState("To Do");
+        card.setUser(getUser());
+        return cardsRepository.save(card);
     }
 
     @Transactional
     public Card updateCard(Card oldCard, CardsDto cardsDto){
-        oldCard.setName(cardsDto.getName());
-        oldCard.setDescription(cardsDto.getDescription());
-        oldCard.setColour(cardsDto.getColour());
-        return cardsRepository.save(oldCard);
-    }
 
-    private Users getUser(){
-        var user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByEmail(user.getEmail()).get();
+        if(oldCard.getUser() == getUser()){
+            oldCard.setName(cardsDto.getName());
+            oldCard.setDescription(cardsDto.getDescription());
+            oldCard.setColour(cardsDto.getColour());
+            return cardsRepository.save(oldCard);
+        }else{
+            return null;
+        }
     }
 
     @Transactional
@@ -136,20 +142,13 @@ public class CardsService {
         cardsRepository.delete(card);
     }
 
-    private Card convertDTOToCard(CardsDto cardsDto, String cardState,Users user){
-
-        var card = new Card();
-        card.setName(cardsDto.getName());
-        card.setColour(cardsDto.getColour());
-        card.setDescription(cardsDto.getDescription());
-        card.setState(cardState);
-        card.setUser(user);
-
-        return card;
-    }
-
     private Date convertStringToDate(String dateString) throws ParseException {
         return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+    }
+
+    public Users getUser(){
+        var user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(user.getEmail()).get();
     }
 
 }
